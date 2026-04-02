@@ -1,5 +1,3 @@
-<image-card alt="Stata" src="https://img.shields.io/badge/Stata-Used-blue" ></image-card>
-<image-card alt="Python" src="https://img.shields.io/badge/Python-Used-green" ></image-card>
 # UK Housing Price Analysis
 
 **Quantitative and Time-Series Analysis of UK Housing Prices with Cross-Sectional and Temporal Dimensions**
