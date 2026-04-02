@@ -1,0 +1,36 @@
+\begin{table}[htbp]\centering
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\caption{OLS Regression by Price Group}
+\begin{tabular}{l*{4}{c}}
+\hline\hline
+                &\multicolumn{1}{c}{(1)}&\multicolumn{1}{c}{(2)}&\multicolumn{1}{c}{(3)}&\multicolumn{1}{c}{(4)}\\
+                &\multicolumn{1}{c}{House\_Price}&\multicolumn{1}{c}{House\_Price}&\multicolumn{1}{c}{House\_Price}&\multicolumn{1}{c}{House\_Price}\\
+\hline
+Square\_Footage  &    199.8\sym{***}&    197.6\sym{***}&    197.1\sym{***}&    197.5\sym{***}\\
+                &  (0.248)         &  (1.130)         &  (1.249)         &  (1.269)         \\
+[1em]
+House\_Age       &   -991.4\sym{***}&   -975.2\sym{***}&   -977.1\sym{***}&   -986.7\sym{***}\\
+                &  (15.06)         &  (25.86)         &  (27.25)         &  (27.37)         \\
+[1em]
+Num\_Bedrooms    &  10163.0\sym{***}&   9832.3\sym{***}&  10262.8\sym{***}&  10212.8\sym{***}\\
+                &  (218.8)         &  (375.7)         &  (360.0)         &  (412.3)         \\
+[1em]
+Num\_Bathrooms   &   8249.3\sym{***}&   8474.6\sym{***}&   8203.2\sym{***}&   7756.2\sym{***}\\
+                &  (378.6)         &  (650.1)         &  (636.1)         &  (692.3)         \\
+[1em]
+Lot\_Size        &  14926.0\sym{***}&  14319.1\sym{***}&  14891.1\sym{***}&  15168.6\sym{***}\\
+                &  (240.4)         &  (437.2)         &  (399.5)         &  (429.8)         \\
+[1em]
+Garage\_Size     &   5156.3\sym{***}&   5455.6\sym{***}&   4272.4\sym{***}&   5759.3\sym{***}\\
+                &  (383.3)         &  (674.2)         &  (628.4)         &  (694.2)         \\
+[1em]
+Constant        &   1189.0         &   4947.9\sym{*}  &   8615.8\sym{*}  &  10623.9\sym{*}  \\
+                & (1505.1)         & (2896.7)         & (4465.3)         & (5791.4)         \\
+\hline
+Observations    &     1000         &      334         &      333         &      333         \\
+R-squared       &    0.999         &    0.990         &    0.987         &    0.988         \\
+\hline\hline
+\multicolumn{5}{l}{\footnotesize Standard errors in parentheses}\\
+\multicolumn{5}{l}{\footnotesize \sym{*} \(p<0.10\), \sym{**} \(p<0.05\), \sym{***} \(p<0.01\)}\\
+\end{tabular}
+\end{table}
