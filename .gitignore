@@ -5,39 +5,33 @@ __pycache__/
 
 # Jupyter Notebook
 .ipynb_checkpoints/
-*.ipynb_checkpoints
 
 # Virtual environments
 venv/
 env/
 ENV/
-env.bak/
-venv.bak/
-
-# Stata temporary files
-*.log
-*.dta
-*.gph
-*.tmp
-*.swp
-
-# IDE and editor files
-.vscode/
-.idea/
-*.swp
-*.swo
-.DS_Store
-Thumbs.db
+*.env
 
 # Logs
 *.log
 logs/
 
+# Preserve Stata's log folder and files
+!code/cross_sectional/logs/
+!code/cross_sectional/logs/*.log
+
+# Stata temporary files
+*.dta
+*.gph
+*.tmp
+
+# IDE / OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
 # Python packaging
 *.egg-info/
 dist/
 build/
-
-# Conda
-*.conda
-*.condarc
