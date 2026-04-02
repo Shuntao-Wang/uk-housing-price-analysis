@@ -1,5 +1,3 @@
-# Treat .do files as Stata language
 *.do linguist-language=Stata
-
 *.do linguist-detectable=true
-*.ipynb linguist-detectable=true
+*.ipynb linguist-detectable=false
