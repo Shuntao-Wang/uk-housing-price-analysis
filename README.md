@@ -40,6 +40,7 @@ Cross-sectional analysis was primarily conducted in **Stata**, while **Python** 
 uk-housing-price-analysis/
 ├── README.md
 ├── requirements.txt
+├── .gitattributes
 ├── .gitignore
 │
 ├── data/
