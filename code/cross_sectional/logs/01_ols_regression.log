@@ -1,0 +1,516 @@
+---------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\lenovo\uk-housing-price-analysis\code\cross_sectional\..\\..\\/code/cross_sectional/logs//01_ols_regression.log
+  log type:  text
+ opened on:  29 Mar 2026, 17:34:37
+
+. 
+. *===================== 2. Load Processed Data =====================
+. import delimited using "$data", clear
+(encoding automatically selected: ISO-8859-1)
+(11 vars, 1,000 obs)
+
+. display "Dataset loaded: " _N " observations, " c(k) " variables"
+Dataset loaded: 1000 observations, 11 variables
+
+. 
+. * Basic data check
+. describe
+
+Contains data
+ Observations:         1,000                  
+    Variables:            11                  
+---------------------------------------------------------------------------------------------------------------------------------------
+Variable      Storage   Display    Value
+    name         type    format    label      Variable label
+---------------------------------------------------------------------------------------------------------------------------------------
+house_id        int     %8.0g                 House_Id
+year_built      int     %8.0g                 Year_Built
+house_age       byte    %8.0g                 House_Age
+house_price     float   %9.0g                 House_Price
+price_per_sqft  float   %9.0g                 Price_Per_Sqft
+square_footage  int     %8.0g                 Square_Footage
+num_bedrooms    byte    %8.0g                 Num_Bedrooms
+num_bathrooms   byte    %8.0g                 Num_Bathrooms
+lot_size        float   %9.0g                 Lot_Size
+garage_size     byte    %8.0g                 Garage_Size
+neighborhood_~y byte    %8.0g                 Neighborhood_Quality
+---------------------------------------------------------------------------------------------------------------------------------------
+Sorted by: 
+     Note: Dataset has changed since last saved.
+
+. summarize
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+    house_id |      1,000       500.5    288.8194          1       1000
+  year_built |      1,000     1986.55    20.63292       1950       2022
+   house_age |      1,000       38.45    20.63292          3         75
+ house_price |      1,000      618861    253568.1   111626.9    1108237
+price_per_~t |      1,000     226.918    26.92528     176.01     430.61
+-------------+---------------------------------------------------------
+square_foo~e |      1,000    2815.422    1255.515        503       4999
+num_bedrooms |      1,000        2.99    1.427564          1          5
+num_bathro~s |      1,000       1.973    .8203316          1          3
+    lot_size |      1,000    2.778087    1.297903   .5060582   4.989303
+ garage_size |      1,000       1.022    .8149725          0          2
+-------------+---------------------------------------------------------
+neighborho~y |      1,000       5.615    2.887059          1         10
+
+. 
+. *===================== 3. Descriptive Statistics =====================
+. display _n "=== Descriptive Statistics ==="
+
+=== Descriptive Statistics ===
+
+. summarize square_footage num_bedrooms num_bathrooms year_built ///
+>           lot_size garage_size neighborhood_quality house_price ///
+>           house_age price_per_sqft, detail
+
+                       Square_Footage
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%          565            503
+ 5%          761            504
+10%       1062.5            505       Obs               1,000
+25%         1749            509       Sum of wgt.       1,000
+
+50%       2862.5                      Mean           2815.422
+                        Largest       Std. dev.      1255.515
+75%         3851           4995
+90%         4559           4996       Variance        1576318
+95%         4746           4996       Skewness      -.0659016
+99%       4986.5           4999       Kurtosis       1.871577
+
+                        Num_Bedrooms
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%            1              1
+ 5%            1              1
+10%            1              1       Obs               1,000
+25%            2              1       Sum of wgt.       1,000
+
+50%            3                      Mean               2.99
+                        Largest       Std. dev.      1.427564
+75%            4              5
+90%            5              5       Variance       2.037938
+95%            5              5       Skewness       .0258451
+99%            5              5       Kurtosis       1.667061
+
+                        Num_Bathrooms
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%            1              1
+ 5%            1              1
+10%            1              1       Obs               1,000
+25%            1              1       Sum of wgt.       1,000
+
+50%            2                      Mean              1.973
+                        Largest       Std. dev.      .8203316
+75%            3              3
+90%            3              3       Variance       .6729439
+95%            3              3       Skewness       .0498425
+99%            3              3       Kurtosis       1.489166
+
+                         Year_Built
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%         1950           1950
+ 5%         1954           1950
+10%         1958           1950       Obs               1,000
+25%         1969           1950       Sum of wgt.       1,000
+
+50%         1986                      Mean            1986.55
+                        Largest       Std. dev.      20.63292
+75%       2004.5           2022
+90%         2015           2022       Variance       425.7172
+95%         2018           2022       Skewness      -.0212217
+99%         2022           2022       Kurtosis       1.814471
+
+                          Lot_Size
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%     .5413843       .5060582
+ 5%     .7224622        .514134
+10%     .9461384       .5226195       Obs               1,000
+25%     1.664644       .5240577       Sum of wgt.       1,000
+
+50%      2.80974                      Mean           2.778087
+                        Largest       Std. dev.      1.297903
+75%     3.924725       4.983792
+90%     4.545609       4.984545       Variance       1.684553
+95%     4.744033       4.986092       Skewness      -.0442216
+99%     4.953173       4.989303       Kurtosis       1.799107
+
+                         Garage_Size
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%            0              0
+ 5%            0              0
+10%            0              0       Obs               1,000
+25%            0              0       Sum of wgt.       1,000
+
+50%            1                      Mean              1.022
+                        Largest       Std. dev.      .8149725
+75%            2              2
+90%            2              2       Variance       .6641802
+95%            2              2       Skewness      -.0403398
+99%            2              2       Kurtosis       1.508203
+
+                    Neighborhood_Quality
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%            1              1
+ 5%            1              1
+10%            2              1       Obs               1,000
+25%            3              1       Sum of wgt.       1,000
+
+50%            6                      Mean              5.615
+                        Largest       Std. dev.      2.887059
+75%            8             10
+90%           10             10       Variance        8.33511
+95%           10             10       Skewness      -.0204141
+99%           10             10       Kurtosis       1.794475
+
+                         House_Price
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%     152607.3       111626.9
+ 5%     214319.4       113576.5
+10%     262552.9       120795.6       Obs               1,000
+25%       401294       126097.9       Sum of wgt.       1,000
+
+50%     628267.3                      Mean             618861
+                        Largest       Std. dev.      253568.1
+75%     827142.1        1099212
+90%     967534.2        1102534       Variance       6.43e+10
+95%      1011180        1107045       Skewness      -.0638592
+99%      1067982        1108237       Kurtosis       1.908073
+
+                          House_Age
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%            3              3
+ 5%            7              3
+10%           10              3       Obs               1,000
+25%         20.5              3       Sum of wgt.       1,000
+
+50%           39                      Mean              38.45
+                        Largest       Std. dev.      20.63292
+75%           56             75
+90%           67             75       Variance       425.7172
+95%           71             75       Skewness       .0212217
+99%           75             75       Kurtosis       1.814471
+
+                       Price_Per_Sqft
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%      192.435         176.01
+ 5%      200.305         176.59
+10%       204.28         181.43       Obs               1,000
+25%       211.43         181.75       Sum of wgt.       1,000
+
+50%      219.595                      Mean            226.918
+                        Largest       Std. dev.      26.92528
+75%      234.205         352.75
+90%       257.87         362.69       Variance       724.9708
+95%      279.405         409.63       Skewness       2.407849
+99%       331.66         430.61       Kurtosis       12.01307
+
+. 
+. *===================== 4. Graphical Analysis =====================
+. display _n "=== Generating Graphs ==="
+
+=== Generating Graphs ===
+
+. 
+. * Correlation matrix
+. correlate square_footage num_bedrooms num_bathrooms year_built ///
+>           lot_size garage_size neighborhood_quality house_price ///
+>           house_age price_per_sqft
+(obs=1,000)
+
+             | square~e num_be~s num_ba~s year_b~t lot_size garage~e neighb~y house~ce house~ge price_~t
+-------------+------------------------------------------------------------------------------------------
+square_foo~e |   1.0000
+num_bedrooms |  -0.0436   1.0000
+num_bathro~s |  -0.0316   0.0228   1.0000
+  year_built |  -0.0224  -0.0158  -0.0211   1.0000
+    lot_size |   0.0895  -0.0094   0.0349  -0.0611   1.0000
+ garage_size |   0.0306   0.1138   0.0248  -0.0255   0.0024   1.0000
+neighborho~y |  -0.0084  -0.0490   0.0176  -0.0095   0.0376  -0.0113   1.0000
+ house_price |   0.9913   0.0146  -0.0019   0.0520   0.1604   0.0521  -0.0078   1.0000
+   house_age |   0.0224   0.0158   0.0211  -1.0000   0.0611   0.0255   0.0095  -0.0520   1.0000
+price_per_~t |  -0.5925   0.2981   0.1377   0.3408   0.2448   0.0877  -0.0050  -0.5112  -0.3408   1.0000
+
+
+. 
+. graph matrix square_footage num_bedrooms num_bathrooms year_built ///
+>              lot_size garage_size neighborhood_quality house_price ///
+>              house_age price_per_sqft, title("Correlation Matrix")
+
+. 
+. graph export "$figures/correlation_matrix.png", replace width(2000)
+(file ..\\..\\/results/figures//correlation_matrix.png not found)
+file ..\\..\\/results/figures//correlation_matrix.png saved as PNG format
+
+. graph close
+
+. 
+. * Scatter plots - House_Price
+. local price_vars square_footage house_age num_bedrooms num_bathrooms lot_size garage_size neighborhood_quality price_per_sqft
+
+. 
+. foreach var of local price_vars {
+  2.     scatter house_price `var', title("House Price vs `var'") ///
+>         ytitle("House Price") xtitle("`var'")
+  3.     graph export "$figures/scatter_house_price_vs_`var'.png", replace
+  4.     graph close
+  5. }
+(file ..\\..\\/results/figures//scatter_house_price_vs_square_footage.png not found)
+file ..\\..\\/results/figures//scatter_house_price_vs_square_footage.png saved as PNG format
+(file ..\\..\\/results/figures//scatter_house_price_vs_house_age.png not found)
+file ..\\..\\/results/figures//scatter_house_price_vs_house_age.png saved as PNG format
+(file ..\\..\\/results/figures//scatter_house_price_vs_num_bedrooms.png not found)
+file ..\\..\\/results/figures//scatter_house_price_vs_num_bedrooms.png saved as PNG format
+(file ..\\..\\/results/figures//scatter_house_price_vs_num_bathrooms.png not found)
+file ..\\..\\/results/figures//scatter_house_price_vs_num_bathrooms.png saved as PNG format
+(file ..\\..\\/results/figures//scatter_house_price_vs_lot_size.png not found)
+file ..\\..\\/results/figures//scatter_house_price_vs_lot_size.png saved as PNG format
+(file ..\\..\\/results/figures//scatter_house_price_vs_garage_size.png not found)
+file ..\\..\\/results/figures//scatter_house_price_vs_garage_size.png saved as PNG format
+(file ..\\..\\/results/figures//scatter_house_price_vs_neighborhood_quality.png not found)
+file ..\\..\\/results/figures//scatter_house_price_vs_neighborhood_quality.png saved as PNG format
+(file ..\\..\\/results/figures//scatter_house_price_vs_price_per_sqft.png not found)
+file ..\\..\\/results/figures//scatter_house_price_vs_price_per_sqft.png saved as PNG format
+
+. 
+. * Scatter plots - Price_Per_Sqft
+. foreach var of local price_vars {
+  2.     if "`var'" != "price_per_sqft" {   // Avoid plotting against itself
+  3.         scatter price_per_sqft `var', title("Price per Sqft vs `var'") ///
+>             ytitle("Price per Sqft") xtitle("`var'")
+  4.         graph export "$figures/scatter_price_per_sqft_vs_`var'.png", replace
+  5.         graph close
+  6.     }
+  7. }
+(file ..\\..\\/results/figures//scatter_price_per_sqft_vs_square_footage.png not found)
+file ..\\..\\/results/figures//scatter_price_per_sqft_vs_square_footage.png saved as PNG format
+(file ..\\..\\/results/figures//scatter_price_per_sqft_vs_house_age.png not found)
+file ..\\..\\/results/figures//scatter_price_per_sqft_vs_house_age.png saved as PNG format
+(file ..\\..\\/results/figures//scatter_price_per_sqft_vs_num_bedrooms.png not found)
+file ..\\..\\/results/figures//scatter_price_per_sqft_vs_num_bedrooms.png saved as PNG format
+(file ..\\..\\/results/figures//scatter_price_per_sqft_vs_num_bathrooms.png not found)
+file ..\\..\\/results/figures//scatter_price_per_sqft_vs_num_bathrooms.png saved as PNG format
+(file ..\\..\\/results/figures//scatter_price_per_sqft_vs_lot_size.png not found)
+file ..\\..\\/results/figures//scatter_price_per_sqft_vs_lot_size.png saved as PNG format
+(file ..\\..\\/results/figures//scatter_price_per_sqft_vs_garage_size.png not found)
+file ..\\..\\/results/figures//scatter_price_per_sqft_vs_garage_size.png saved as PNG format
+(file ..\\..\\/results/figures//scatter_price_per_sqft_vs_neighborhood_quality.png not found)
+file ..\\..\\/results/figures//scatter_price_per_sqft_vs_neighborhood_quality.png saved as PNG format
+
+. 
+. *===================== 5. OLS Regression - House_Price =====================
+. display _n "=== OLS Regression: House Price ==="
+
+=== OLS Regression: House Price ===
+
+. 
+. * Full model
+. regress house_price square_footage house_age num_bedrooms ///
+>                    num_bathrooms lot_size garage_size neighborhood_quality
+
+      Source |       SS           df       MS      Number of obs   =     1,000
+-------------+----------------------------------   F(7, 992)       =  95425.17
+       Model |  6.4137e+13         7  9.1625e+12   Prob > F        =    0.0000
+    Residual |  9.5249e+10       992  96017211.3   R-squared       =    0.9985
+-------------+----------------------------------   Adj R-squared   =    0.9985
+       Total |  6.4232e+13       999  6.4297e+10   Root MSE        =    9798.8
+
+--------------------------------------------------------------------------------------
+         house_price | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------------+----------------------------------------------------------------
+      square_footage |   199.7564   .2485186   803.79   0.000     199.2687    200.2441
+           house_age |  -991.4681    15.0652   -65.81   0.000    -1021.031   -961.9048
+        num_bedrooms |   10170.95   219.1574    46.41   0.000     9740.889    10601.02
+       num_bathrooms |   8244.535   378.6977    21.77   0.000     7501.394    8987.675
+            lot_size |   14919.32   240.5825    62.01   0.000     14447.21    15391.43
+         garage_size |   5158.063   383.3498    13.46   0.000     4405.794    5910.333
+neighborhood_quality |   80.61718   107.6183     0.75   0.454    -130.5684    291.8028
+               _cons |   735.3618   1622.667     0.45   0.651    -2448.892    3919.615
+--------------------------------------------------------------------------------------
+
+. 
+. * Reduced model (remove insignificant neighborhood_quality)
+. regress house_price square_footage house_age num_bedrooms ///
+>                    num_bathrooms lot_size garage_size
+
+      Source |       SS           df       MS      Number of obs   =     1,000
+-------------+----------------------------------   F(6, 993)       >  99999.00
+       Model |  6.4137e+13         6  1.0690e+13   Prob > F        =    0.0000
+    Residual |  9.5303e+10       993  95974777.7   R-squared       =    0.9985
+-------------+----------------------------------   Adj R-squared   =    0.9985
+       Total |  6.4232e+13       999  6.4297e+10   Root MSE        =    9796.7
+
+--------------------------------------------------------------------------------
+   house_price | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------+----------------------------------------------------------------
+square_footage |   199.7539   .2484419   804.03   0.000     199.2664    200.2415
+     house_age |  -991.3763   15.06137   -65.82   0.000    -1020.932   -961.8205
+  num_bedrooms |   10162.95   218.8485    46.44   0.000     9733.493    10592.41
+ num_bathrooms |   8249.347   378.5595    21.79   0.000     7506.479    8992.216
+      lot_size |   14926.01   240.3638    62.10   0.000     14454.33    15397.69
+   garage_size |   5156.345   383.2582    13.45   0.000     4404.256    5908.434
+         _cons |   1189.049   1505.073     0.79   0.430    -1764.441    4142.538
+--------------------------------------------------------------------------------
+
+. 
+. * Model diagnostics
+. vif
+
+    Variable |       VIF       1/VIF  
+-------------+----------------------
+num_bedrooms |      1.02    0.984268
+ garage_size |      1.02    0.984743
+    lot_size |      1.01    0.987118
+square_foo~e |      1.01    0.987412
+   house_age |      1.01    0.994813
+num_bathro~s |      1.00    0.996195
+-------------+----------------------
+    Mean VIF |      1.01
+
+. estat hettest
+
+Breusch–Pagan/Cook–Weisberg test for heteroskedasticity 
+Assumption: Normal error terms
+Variable: Fitted values of house_price
+
+H0: Constant variance
+
+    chi2(1) =   1.61
+Prob > chi2 = 0.2039
+
+. 
+. *===================== 6. OLS Regression - Price_Per_Sqft =====================
+. display _n "=== OLS Regression: Price per Square Foot ==="
+
+=== OLS Regression: Price per Square Foot ===
+
+. 
+. * Full model
+. regress price_per_sqft square_footage house_age num_bedrooms ///
+>                       num_bathrooms lot_size garage_size neighborhood_quality
+
+      Source |       SS           df       MS      Number of obs   =     1,000
+-------------+----------------------------------   F(7, 992)       =    271.44
+       Model |  475826.687         7  67975.2411   Prob > F        =    0.0000
+    Residual |  248419.183       992  250.422564   R-squared       =    0.6570
+-------------+----------------------------------   Adj R-squared   =    0.6546
+       Total |  724245.871       999  724.970842   Root MSE        =    15.825
+
+--------------------------------------------------------------------------------------
+      price_per_sqft | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------------+----------------------------------------------------------------
+      square_footage |  -.0128787   .0004013   -32.09   0.000    -.0136663   -.0120911
+           house_age |   -.463721   .0243297   -19.06   0.000    -.5114646   -.4159774
+        num_bedrooms |   5.065757   .3539308    14.31   0.000     4.371218    5.760296
+       num_bathrooms |   3.514373   .6115822     5.75   0.000      2.31423    4.714517
+            lot_size |   6.619427   .3885315    17.04   0.000     5.856989    7.381865
+         garage_size |   2.678954   .6190952     4.33   0.000     1.464067     3.89384
+neighborhood_quality |    -.06037   .1737993    -0.35   0.728    -.4014266    .2806866
+               _cons |   238.1383   2.620544    90.87   0.000     232.9958    243.2807
+--------------------------------------------------------------------------------------
+
+. 
+. * Reduced model
+. regress price_per_sqft square_footage house_age num_bedrooms ///
+>                       num_bathrooms lot_size garage_size
+
+      Source |       SS           df       MS      Number of obs   =     1,000
+-------------+----------------------------------   F(6, 993)       =    316.94
+       Model |  475796.473         6  79299.4121   Prob > F        =    0.0000
+    Residual |  248449.398       993  250.200804   R-squared       =    0.6570
+-------------+----------------------------------   Adj R-squared   =    0.6549
+       Total |  724245.871       999  724.970842   Root MSE        =    15.818
+
+--------------------------------------------------------------------------------
+price_per_sqft | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------+----------------------------------------------------------------
+square_footage |  -.0128768   .0004011   -32.10   0.000     -.013664   -.0120897
+     house_age |  -.4637898   .0243181   -19.07   0.000    -.5115106   -.4160689
+  num_bedrooms |    5.07175   .3533535    14.35   0.000     4.378345    5.765155
+ num_bathrooms |   3.510769   .6112234     5.74   0.000     2.311332    4.710207
+      lot_size |    6.61442   .3880921    17.04   0.000     5.852845    7.375994
+   garage_size |    2.68024   .6188099     4.33   0.000     1.465915    3.894565
+         _cons |   237.7985   2.430096    97.86   0.000     233.0298    242.5672
+--------------------------------------------------------------------------------
+
+. 
+. * Diagnostics
+. vif
+
+    Variable |       VIF       1/VIF  
+-------------+----------------------
+num_bedrooms |      1.02    0.984268
+ garage_size |      1.02    0.984743
+    lot_size |      1.01    0.987118
+square_foo~e |      1.01    0.987412
+   house_age |      1.01    0.994813
+num_bathro~s |      1.00    0.996195
+-------------+----------------------
+    Mean VIF |      1.01
+
+. estat hettest
+
+Breusch–Pagan/Cook–Weisberg test for heteroskedasticity 
+Assumption: Normal error terms
+Variable: Fitted values of price_per_sqft
+
+H0: Constant variance
+
+    chi2(1) = 556.00
+Prob > chi2 = 0.0000
+
+. 
+. * Robust standard error for Price_Per_Sqft (due to heteroscedasticity)
+. regress price_per_sqft square_footage house_age num_bedrooms ///
+>                       num_bathrooms lot_size garage_size, robust
+
+Linear regression                               Number of obs     =      1,000
+                                                F(6, 993)         =     119.60
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.6570
+                                                Root MSE          =     15.818
+
+--------------------------------------------------------------------------------
+               |               Robust
+price_per_sqft | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+---------------+----------------------------------------------------------------
+square_footage |  -.0128768      .0006   -21.46   0.000    -.0140542   -.0116995
+     house_age |  -.4637898   .0286839   -16.17   0.000    -.5200778   -.4075017
+  num_bedrooms |    5.07175   .3846109    13.19   0.000     4.317006    5.826493
+ num_bathrooms |   3.510769   .6374911     5.51   0.000     2.259785    4.761754
+      lot_size |    6.61442   .3597188    18.39   0.000     5.908523    7.320316
+   garage_size |    2.68024   .6253373     4.29   0.000     1.453106    3.907374
+         _cons |   237.7985   2.928193    81.21   0.000     232.0524    243.5447
+--------------------------------------------------------------------------------
+
+. 
+. *===================== 7. Final Output =====================
+. display _n "01_ols_regression.do completed successfully!"
+
+01_ols_regression.do completed successfully!
+
+. display "   All graphs saved to: $figures"
+   All graphs saved to: ..\\..\\/results/figures/
+
+. display "   Log file saved to: $logs/01_ols_regression.log"
+   Log file saved to: ..\\..\\/code/cross_sectional/logs//01_ols_regression.log
+
+. 
+. log close
+      name:  <unnamed>
+       log:  C:\Users\lenovo\uk-housing-price-analysis\code\cross_sectional\..\\..\\/code/cross_sectional/logs//01_ols_regression.log
+  log type:  text
+ closed on:  29 Mar 2026, 17:34:57
+---------------------------------------------------------------------------------------------------------------------------------------

@@ -1,0 +1,292 @@
+---------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\lenovo\uk-housing-price-analysis\code\cross_sectional\..\\..\\/code/cross_sectional/logs//02_group_regression.log
+  log type:  text
+ opened on:  29 Mar 2026, 17:47:51
+
+. 
+. *===================== 2. Load Processed Data =====================
+. import delimited using "$data", clear
+(encoding automatically selected: ISO-8859-1)
+(11 vars, 1,000 obs)
+
+. display "Dataset loaded: " _N " observations"
+Dataset loaded: 1000 observations
+
+. 
+. *===================== 3. Create Price Groups =====================
+. display _n "=== Creating Price Groups (Tertiles) ==="
+
+=== Creating Price Groups (Tertiles) ===
+
+. 
+. egen low_threshold  = pctile(house_price), p(33.33)
+
+. egen high_threshold = pctile(house_price), p(66.67)
+
+. 
+. gen price_group = .
+(1,000 missing values generated)
+
+. replace price_group = 1 if house_price <= low_threshold
+(334 real changes made)
+
+. replace price_group = 2 if house_price > low_threshold & house_price <= high_threshold
+(333 real changes made)
+
+. replace price_group = 3 if house_price > high_threshold
+(333 real changes made)
+
+. 
+. label define price_group_lbl 1 "Low" 2 "Medium" 3 "High"
+
+. label values price_group price_group_lbl
+
+. 
+. tab price_group, missing
+
+price_group |      Freq.     Percent        Cum.
+------------+-----------------------------------
+        Low |        334       33.40       33.40
+     Medium |        333       33.30       66.70
+       High |        333       33.30      100.00
+------------+-----------------------------------
+      Total |      1,000      100.00
+
+. 
+. * Summary statistics by group
+. table price_group, statistic(mean house_price square_footage house_age) 
+
+-------------------------------------------------------
+            |  House_Price   Square_Footage   House_Age
+------------+------------------------------------------
+price_group |                                          
+  Low       |     324395.6         1361.886    39.17066
+  Medium    |     628300.3         2868.246    39.33634
+  High      |     904771.4         4220.498    36.84084
+  Total     |       618861         2815.422       38.45
+-------------------------------------------------------
+
+. table price_group, statistic(mean num_bedrooms num_bathrooms lot_size garage_size)
+
+--------------------------------------------------------------------
+            |  Num_Bedrooms   Num_Bathrooms   Lot_Size   Garage_Size
+------------+-------------------------------------------------------
+price_group |                                                       
+  Low       |      3.005988        1.979042   2.572052      .9760479
+  Medium    |      2.984985        1.978979   2.783693       1.03003
+  High      |      2.978979        1.960961   2.979136       1.06006
+  Total     |          2.99           1.973   2.778087         1.022
+--------------------------------------------------------------------
+
+. 
+. *===================== 4. Grouped OLS Regressions =====================
+. display _n "=== OLS Regressions by Price Group ==="
+
+=== OLS Regressions by Price Group ===
+
+. 
+. * Pooled regression (all data)
+. regress house_price square_footage house_age num_bedrooms num_bathrooms lot_size garage_size
+
+      Source |       SS           df       MS      Number of obs   =     1,000
+-------------+----------------------------------   F(6, 993)       >  99999.00
+       Model |  6.4137e+13         6  1.0690e+13   Prob > F        =    0.0000
+    Residual |  9.5303e+10       993  95974777.7   R-squared       =    0.9985
+-------------+----------------------------------   Adj R-squared   =    0.9985
+       Total |  6.4232e+13       999  6.4297e+10   Root MSE        =    9796.7
+
+--------------------------------------------------------------------------------
+   house_price | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------+----------------------------------------------------------------
+square_footage |   199.7539   .2484419   804.03   0.000     199.2664    200.2415
+     house_age |  -991.3763   15.06137   -65.82   0.000    -1020.932   -961.8205
+  num_bedrooms |   10162.95   218.8485    46.44   0.000     9733.493    10592.41
+ num_bathrooms |   8249.347   378.5595    21.79   0.000     7506.479    8992.216
+      lot_size |   14926.01   240.3638    62.10   0.000     14454.33    15397.69
+   garage_size |   5156.345   383.2582    13.45   0.000     4404.256    5908.434
+         _cons |   1189.049   1505.073     0.79   0.430    -1764.441    4142.538
+--------------------------------------------------------------------------------
+
+. estimates store pooled
+
+. scalar rss_pooled = e(rss)
+
+. scalar df_pooled = e(df_r)
+
+. 
+. * Group 1: Low price
+. regress house_price square_footage house_age num_bedrooms num_bathrooms lot_size garage_size if price_group == 1
+
+      Source |       SS           df       MS      Number of obs   =       334
+-------------+----------------------------------   F(6, 327)       =   5323.91
+       Model |  3.0152e+12         6  5.0253e+11   Prob > F        =    0.0000
+    Residual |  3.0866e+10       327  94391882.5   R-squared       =    0.9899
+-------------+----------------------------------   Adj R-squared   =    0.9897
+       Total |  3.0461e+12       333  9.1474e+09   Root MSE        =    9715.5
+
+--------------------------------------------------------------------------------
+   house_price | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------+----------------------------------------------------------------
+square_footage |   197.6405    1.13039   174.84   0.000     195.4168    199.8643
+     house_age |   -975.163   25.86344   -37.70   0.000    -1026.043   -924.2833
+  num_bedrooms |   9832.293   375.7238    26.17   0.000     9093.152    10571.43
+ num_bathrooms |   8474.557    650.064    13.04   0.000     7195.722    9753.392
+      lot_size |   14319.11   437.1833    32.75   0.000     13459.06    15179.16
+   garage_size |   5455.552   674.1641     8.09   0.000     4129.306    6781.798
+         _cons |   4947.901   2896.703     1.71   0.089    -750.6227    10646.42
+--------------------------------------------------------------------------------
+
+. estimates store low
+
+. scalar rss1 = e(rss)
+
+. scalar df1 = e(df_r)
+
+. 
+. * Group 2: Medium price
+. regress house_price square_footage house_age num_bedrooms num_bathrooms lot_size garage_size if price_group == 2
+
+      Source |       SS           df       MS      Number of obs   =       333
+-------------+----------------------------------   F(6, 326)       =   4216.53
+       Model |  2.2595e+12         6  3.7659e+11   Prob > F        =    0.0000
+    Residual |  2.9116e+10       326  89312208.5   R-squared       =    0.9873
+-------------+----------------------------------   Adj R-squared   =    0.9870
+       Total |  2.2886e+12       332  6.8935e+09   Root MSE        =    9450.5
+
+--------------------------------------------------------------------------------
+   house_price | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------+----------------------------------------------------------------
+square_footage |   197.1241   1.249263   157.79   0.000     194.6665    199.5818
+     house_age |  -977.1437   27.24629   -35.86   0.000    -1030.744    -923.543
+  num_bedrooms |    10262.8   359.9701    28.51   0.000     9554.646    10970.96
+ num_bathrooms |   8203.215   636.0858    12.90   0.000     6951.864    9454.566
+      lot_size |    14891.1    399.512    37.27   0.000     14105.15    15677.05
+   garage_size |   4272.373   628.3762     6.80   0.000     3036.189    5508.557
+         _cons |   8615.752    4465.29     1.93   0.055    -168.6679    17400.17
+--------------------------------------------------------------------------------
+
+. estimates store medium
+
+. scalar rss2 = e(rss)
+
+. scalar df2 = e(df_r)
+
+. 
+. * Group 3: High price
+. regress house_price square_footage house_age num_bedrooms num_bathrooms lot_size garage_size if price_group == 3
+
+      Source |       SS           df       MS      Number of obs   =       333
+-------------+----------------------------------   F(6, 326)       =   4303.47
+       Model |  2.6525e+12         6  4.4208e+11   Prob > F        =    0.0000
+    Residual |  3.3489e+10       326   102726990   R-squared       =    0.9875
+-------------+----------------------------------   Adj R-squared   =    0.9873
+       Total |  2.6860e+12       332  8.0903e+09   Root MSE        =     10135
+
+--------------------------------------------------------------------------------
+   house_price | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------+----------------------------------------------------------------
+square_footage |   197.5053   1.268564   155.69   0.000     195.0097    200.0009
+     house_age |  -986.6998   27.37126   -36.05   0.000    -1040.546   -932.8532
+  num_bedrooms |   10212.76   412.3043    24.77   0.000      9401.65    11023.88
+ num_bathrooms |   7756.199   692.2658    11.20   0.000     6394.327    9118.071
+      lot_size |   15168.62   429.7628    35.30   0.000     14323.16    16014.08
+   garage_size |   5759.251   694.2489     8.30   0.000     4393.478    7125.024
+         _cons |   10623.86   5791.396     1.83   0.068    -769.3612    22017.09
+--------------------------------------------------------------------------------
+
+. estimates store high
+
+. scalar rss3 = e(rss)
+
+. scalar df3 = e(df_r)
+
+. 
+. *===================== 5. Chow Test =====================
+. display _n "=== Chow Test for Structural Break ==="
+
+=== Chow Test for Structural Break ===
+
+. 
+. scalar k = e(df_m) + 1          // number of parameters (including intercept)
+
+. scalar n = _N                   // total sample size
+
+. 
+. scalar f_chow = ((rss_pooled - (rss1 + rss2 + rss3)) / k) / ///
+>                 ((rss1 + rss2 + rss3) / (n - 3*k))
+
+. 
+. scalar p_value = Ftail(k, n - 3*k, f_chow)
+
+. 
+. display "Chow Test F-statistic : " %9.4f f_chow
+Chow Test F-statistic :    2.7412
+
+. display "Degrees of freedom    : " k ", " n-3*k
+Degrees of freedom    : 7, 979
+
+. display "P-value               : " %6.4f p_value
+P-value               : 0.0080
+
+. 
+. if p_value < 0.05 {
+.     display "Result: Reject null hypothesis. Significant structural differences across price groups."
+Result: Reject null hypothesis. Significant structural differences across price groups.
+. }
+
+. else {
+.     display "Result: Fail to reject null. No strong evidence of structural differences."
+. }
+
+. 
+. *===================== 6. Export Regression Tables (Optional but Recommended) =====================
+. 
+. * Export all models to one nice table
+. esttab pooled low medium high using "$tables/ols_by_price_group.csv", replace ///
+>     se star(* 0.10 ** 0.05 *** 0.01) ///
+>     title("OLS Regression by Price Group") ///
+>     scalars("r2 R-squared" "N Observations") ///
+>     label compress
+(file ..\..\/results/tables//ols_by_price_group.csv not found)
+(output written to ..\..\/results/tables//ols_by_price_group.csv)
+
+. 
+. esttab pooled low medium high using "$tables/ols_by_price_group.tex", replace ///
+>     se star(* 0.10 ** 0.05 *** 0.01) ///
+>     title("OLS Regression by Price Group") ///
+>     scalars("r2 R-squared" "N Observations") ///
+>     label compress
+(file ..\..\/results/tables//ols_by_price_group.tex not found)
+(output written to ..\..\/results/tables//ols_by_price_group.tex)
+
+. 
+. display _n "Regression tables exported:"
+
+Regression tables exported:
+
+. display "   - $tables/ols_by_price_group.csv"
+   - ..\\..\\/results/tables//ols_by_price_group.csv
+
+. display "   - $tables/ols_by_price_group.tex"
+   - ..\\..\\/results/tables//ols_by_price_group.tex
+
+. 
+. *===================== 7. Final Message =====================
+. display _n "02_group_regression.do completed successfully!"
+
+02_group_regression.do completed successfully!
+
+. display "   Log file     : $logs/02_group_regression.log"
+   Log file     : ..\\..\\/code/cross_sectional/logs//02_group_regression.log
+
+. display "   Tables saved : $tables/ols_by_price_group.*"
+   Tables saved : ..\\..\\/results/tables//ols_by_price_group.*
+
+. 
+. log close
+      name:  <unnamed>
+       log:  C:\Users\lenovo\uk-housing-price-analysis\code\cross_sectional\..\\..\\/code/cross_sectional/logs//02_group_regression.log
+  log type:  text
+ closed on:  29 Mar 2026, 17:47:53
+---------------------------------------------------------------------------------------------------------------------------------------
